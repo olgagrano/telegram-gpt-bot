@@ -46,7 +46,7 @@ def webhook():
 bot.remove_webhook()
 bot.set_webhook(url=f"https://telegram-gpt-bot-xbzz.onrender.com/{TELEGRAM_BOT_TOKEN}")
 
-print("Бот запущен!")
+print("Бот запущен!".encode('utf-8').decode('utf-8'))
 
 # Запуск стабильного сервера Waitress
 if __name__ == "__main__":
