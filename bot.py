@@ -19,11 +19,12 @@ app = Flask(__name__)
 # Функция для общения с OpenAI
 def get_gpt_response(user_message):
     try:
-        response = openai.ChatCompletion.create(
+        client = openai.OpenAI()  # Создаём новый клиент OpenAI
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[{"role": "user", "content": user_message}]
         )
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
     except Exception as e:
         return f"Ошибка OpenAI: {str(e)}"
 
