@@ -43,7 +43,7 @@ def webhook():
     return "!", 200
 
 bot.remove_webhook()
-bot.set_webhook(url="https://YOUR-RENDER-URL/" + TELEGRAM_BOT_TOKEN)
+bot.set_webhook(url="https://telegram-gpt-bot-xbzz.onrender.com" + TELEGRAM_BOT_TOKEN)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
