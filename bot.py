@@ -1,49 +1,52 @@
+import os
 import telebot
 import openai
-import os
+from flask import Flask, request
+from waitress import serve  # Используем стабильный сервер
 
 # Получаем API-ключи из переменных окружения
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
+# Проверяем, заданы ли API-ключи
+if not OPENAI_API_KEY or not TELEGRAM_BOT_TOKEN:
+    raise ValueError("Отсутствуют API-ключи. Проверьте переменные окружения.")
+
 # Инициализация бота
-bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
-
-def get_gpt_response(user_message):
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": user_message}]
-    )
-    return response["choices"][0]["message"]["content"]
-
-@bot.message_handler(func=lambda message: True)
-def chat_with_gpt(message):
-    try:
-        reply = get_gpt_response(message.text)
-        bot.send_message(message.chat.id, reply)
-    except Exception as e:
-        bot.send_message(message.chat.id, "Ошибка: " + str(e))
-
-print("Бот запущен!")
-from flask import Flask, request
-import telebot
-import os
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 app = Flask(__name__)
 
-@app.route("/" + TELEGRAM_BOT_TOKEN, methods=["POST"])
+# Функция для общения с OpenAI
+def get_gpt_response(user_message):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": user_message}]
+        )
+        return response["choices"][0]["message"]["content"]
+    except Exception as e:
+        return f"Ошибка OpenAI: {str(e)}"
+
+# Обработчик сообщений в Telegram
+@bot.message_handler(func=lambda message: True)
+def chat_with_gpt(message):
+    reply = get_gpt_response(message.text)
+    bot.send_message(message.chat.id, reply)
+
+# Вебхук Flask
+@app.route(f"/{TELEGRAM_BOT_TOKEN}", methods=["POST"])
 def webhook():
     json_str = request.get_data().decode("UTF-8")
     update = telebot.types.Update.de_json(json_str)
     bot.process_new_updates([update])
     return "!", 200
 
+# Устанавливаем вебхук
 bot.remove_webhook()
 bot.set_webhook(url=f"https://telegram-gpt-bot-xbzz.onrender.com/{TELEGRAM_BOT_TOKEN}")
 
+print("Бот запущен!")
+
+# Запуск стабильного сервера Waitress
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    serve(app, host="0.0.0.0", port=5000)
