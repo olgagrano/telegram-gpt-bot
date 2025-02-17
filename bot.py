@@ -20,7 +20,14 @@ app = Flask(__name__)
 def get_gpt_response(user_message):
     try:
         client = openai.OpenAI()  # Создаём новый клиент OpenAI
-        response = client.chat.completions.create(
+        import openai
+
+client = openai.OpenAI(api_key="ТВОЙ_API_КЛЮЧ")
+
+response = client.chat.completions.create(
+    model="gpt-4o",  # Или gpt-3.5-turbo
+    messages=[{"role": "user", "content": "Привет, как дела?"}]
+)
             model="gpt-4o",
             messages=[{"role": "user", "content": user_message}]
         )
