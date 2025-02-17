@@ -21,7 +21,7 @@ def get_gpt_response(user_message):
     try:
         client = openai.OpenAI()  # Создаём новый клиент OpenAI
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[{"role": "user", "content": user_message}]
         )
         return response.choices[0].message.content
