@@ -58,4 +58,6 @@ app.logger.info(f"✅ Бот запущен! Вебхук: {WEBHOOK_URL}")
 
 # Запуск стабильного сервера Waitress
 if __name__ == "__main__":
-    serve(app, host="0.0.0.0", port=5000)
+    if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    serve(app, host="0.0.0.0", port=port)
