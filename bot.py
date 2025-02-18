@@ -61,6 +61,6 @@ app.logger.info(f"✅ Бот запущен! Вебхук: {WEBHOOK_URL}")
 
 # Запуск стабильного сервера Waitress
 if __name__ == "__main__":
-    if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    serve(app, host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 5000))  # Render даёт свой порт
+    print(f"🚀 Бот запущен на порту {port}")
+    serve(app, host="0.0.0.0", port=port)  # Запуск Waitress на нужном порту
