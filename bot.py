@@ -21,15 +21,18 @@ bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 app = Flask(__name__)
 
 # Функция для общения с OpenAI
+import openai
+
 def get_gpt_response(user_message):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4o",  # Используем GPT-4o
+        client = openai.OpenAI(api_key=OPENAI_API_KEY)  # Создаём клиента OpenAI
+        response = client.chat.completions.create(  # Новый формат запроса
+            model="gpt-4o",  # Модель OpenAI (замени, если нужна другая)
             messages=[{"role": "user", "content": user_message}]
         )
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content  # Возвращаем ответ бота
     except Exception as e:
-        return f"⚠️ Ошибка OpenAI: {str(e)}"
+        return f"Ошибка OpenAI: {str(e)}"
 
 # Обработчик сообщений в Telegram
 @bot.message_handler(func=lambda message: True)
