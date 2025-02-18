@@ -10,7 +10,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 # Проверяем, заданы ли API-ключи
 if not OPENAI_API_KEY or not TELEGRAM_BOT_TOKEN:
-    raise ValueError("Отсутствуют API-ключи. Проверьте переменные окружения.")
+    raise ValueError("Ошибка: Отсутствуют API-ключи. Проверьте переменные окружения.")
 
 # Инициализация бота
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
@@ -18,18 +18,10 @@ app = Flask(__name__)
 
 # Функция для общения с OpenAI
 def get_gpt_response(user_message):
-    def get_gpt_response(user_message):
     try:
-        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        client = openai.OpenAI(api_key=OPENAI_API_KEY)
         response = client.chat.completions.create(
-            model="gpt-4o",  
-            messages=[{"role": "user", "content": user_message}]
-        )
-        return response.choices[0].message.content
-    except Exception as e:  # <== ВАЖНО: добавлен except!
-        return f"Ошибка OpenAI: {str(e)}"
-)
-            model="gpt-4o",
+            model="gpt-4o",  # Используем gpt-4o (если у вас доступ)
             messages=[{"role": "user", "content": user_message}]
         )
         return response.choices[0].message.content
@@ -52,9 +44,10 @@ def webhook():
 
 # Устанавливаем вебхук
 bot.remove_webhook()
-bot.set_webhook(url=f"https://telegram-gpt-bot-xbzz.onrender.com/{TELEGRAM_BOT_TOKEN}")
+WEBHOOK_URL = f"https://telegram-gpt-bot-xbzz.onrender.com/{TELEGRAM_BOT_TOKEN}"
+bot.set_webhook(url=WEBHOOK_URL)
 
-print("Бот запущен!".encode('utf-8').decode('utf-8'))
+print(f"✅ Бот запущен! Вебхук: {WEBHOOK_URL}")
 
 # Запуск стабильного сервера Waitress
 if __name__ == "__main__":
